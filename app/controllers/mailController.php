@@ -74,7 +74,7 @@ class mailController{
         $email = $res[0]['email'];
         $user_id = $res[0]['user_id'];
         // $password = $res[0]['password'];
-        $url = 'http://footprint.com/reg?uid='.base64_encode($user_id).'&p='.base64_encode($username);
+        $url = 'http://footprint.deeponder.com/reg?uid='.base64_encode($user_id).'&p='.base64_encode($username);
         $message = "<h1>click the url followed or copy it in the browser</h1></br><h1>it is available </h1><a href=".$url.">".$url."</a>";
         $subject = "注册验证";
         $this->sendmail($email,$message,$subject);
@@ -91,7 +91,7 @@ class mailController{
         $email = $res[0]['email'];
         $user_id = $res[0]['user_id'];
         $password = $res[0]['password'];
-        $url = 'http://footprint.com/resetpw?uid='.$user_id.'&password='.$password;
+        $url = 'http://footprint.deeponder.com/resetpw?uid='.$user_id.'&password='.$password;
         $message = "<a href=".$url.">点我重置密码</a>";
         $subject = "重置密码";
         $this->sendmail($email,$message,$subject);
@@ -125,7 +125,7 @@ class mailController{
         {
             $username=$res[0]->nick_name;
             $password=$res[0]->password;
-            $url = 'http://footprint.com/renewpw?uid='.base64_encode($username).'&p='.$password;
+            $url = 'http://footprint.deeponder.com/renewpw?uid='.base64_encode($username).'&p='.$password;
             $message="<h1>your username is ".$username."</h1><br><h1>click the url to renew your password:<a href=".$url.">click to reset your password</a></h1>";
             $subject="reset your password";
             $this->sendmail($mail,$message,$subject);
