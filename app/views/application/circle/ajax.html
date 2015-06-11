@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ajax异步请求</title>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+</head>
+<body>
+	<form action="save" method="POST" role="form" id="comment-form">
+		<legend>评论</legend>
+	
+		<div class="form-group">
+			<label for="content">说点啥:</label>
+			<input type="text" class="form-control" id="content" name="content" placeholder="Input field">
+		</div>
+	
+		<div class="form-group">
+			<label for="image"></label>
+			<input type="file" name="file" id="image">
+		</div>
+		
+		<button type="submit" class="btn btn-primary">评论</button>
+	</form>
+
+
+	<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+
+		$('#comment-form').submit(function (event) {
+	  		// 屏蔽默认的提交事件
+	        event.preventDefault();
+
+	        var url = $(this).attr('action');
+
+	        var postdata = $(this).serialize();
+
+	        var request = $.post(
+	                url,
+	                postdata,
+	                formpostcompleted,
+	                "json"
+	        );
+	        function formpostcompleted(data, status) {
+	           //请求成果的处理
+	        }
+    	});
+    	
+	</script>
+</body>
+</html>

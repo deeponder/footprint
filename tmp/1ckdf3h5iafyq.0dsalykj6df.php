@@ -17,7 +17,7 @@
 <div id="content">
 </div>
 <div id="button1" align="center">
-<div id="button"><img class="button"src="app/assets/images/edit.png"  /></div><div id="button"><img class="button" src="app/assets/images/map_pin.png" /></div><a href="/circle/home"><div  id="button"><img class="button" src="app/assets/images/users.png" /></div></a><div  id="button"><img  class="button"src="app/assets/images/eye.png" /></div></div>
+<a href="diary"><div id="button"><img class="button"src="app/assets/images/edit.png"  /></div></a><div id="button"><img class="button" src="app/assets/images/map_pin.png" /></div><a href="/circle/home"><div  id="button"><img class="button" src="app/assets/images/users.png" /></div></a><div  id="button"><img  class="button"src="app/assets/images/eye.png" /></div></div>
 
 </body>
 </html>

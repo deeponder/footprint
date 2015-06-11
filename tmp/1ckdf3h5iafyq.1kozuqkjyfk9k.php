@@ -75,10 +75,10 @@
                 src="../app/uploads/<?php echo $list['image']; ?>.jpg" id="imageresource" height="50" width="50"> </a></span>&nbsp&nbsp<span><?php echo $list['content']; ?></span>&nbsp&nbsp&nbsp&nbsp&nbsp<span>published at:<?php echo $list['published_at']; ?></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span
                 class="admire-cnt">
 
-                <?php if ($list['status']): ?>
-            <img class="<?php echo $list['post_id']; ?>" src="../app/assets/images/4.png">
-            <?php else: ?><img class="<?php echo $list['post_id']; ?>" src="../app/assets/images/5.png">
-            <?php endif; ?>
+             <?php if ($list['status']): ?>
+                <img class="<?php echo $list['post_id']; ?>" src="../app/assets/images/4.png">
+                <?php else: ?><img class="<?php echo $list['post_id']; ?>" src="../app/assets/images/5.png">
+             <?php endif; ?>
 
             <span><?php echo $list['likes']; ?></span></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="javascript:void(0);"
             class="collection">
@@ -131,17 +131,14 @@
         $('#home').addClass('active');
     })
     //点赞功能
-    var $image = $('.admire-cnt>img');
-    $image.on('click', function (e) {
+    // var $image = $('.admire-cnt>img');
+    $('.admire-cnt>img').on('click', function (e) {
         var $target = e.target;
         $($target).attr('src', '../app/assets/images/5.png');
         var $text = $($target).siblings('span');
-        // $($target).unbind('click');
         $post_id = $($target).attr('class');
-        // console.log($imgID);
         var url = 'dolike';
         $.getJSON(url, {post_id: $post_id}, function (re) {
-            // console.log(re);
             if (!re[0]) {
                 alert('亲，您点过赞了哦~~');
             } else {

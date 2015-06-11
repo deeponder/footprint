@@ -21,19 +21,7 @@ class CircleController {
             $collection = new \DB\SQL\Mapper($db, 'collection');
             $like = new \DB\SQL\Mapper($db, 'likes');
             $friends = $friend->find(array('friend_id=?', $uid));
-            // $totalfri = count($friends);
-            // $posts    = array();
             $list = array();
-            // for ($i        = 0; $i < $totalfri; $i++) {
-            //     $posts[ $i ]          = $post->find(array('user_id=?', $friends[ $i ]['user_id']));
-            //     //find到底返回的是什么？？？
-            //     // $posts[$i][0]['nick_name'] = 0;
-            //     // $flag[$i][$i][0] = 1;
-            //     // $nickname = $user->select('nick_name', array('user_id=?', $friends[ $i ]['user_id']));
-
-            //     // $posts[$i][$totalfri+1]['nickname'] = $nickname[0]['nick_name'];                
-            // }
-            // 
             // 精华所在！！循环将post内容赋给list，并判断用户是否点过赞
             $i = 0;
             foreach ($friends as $obj)
