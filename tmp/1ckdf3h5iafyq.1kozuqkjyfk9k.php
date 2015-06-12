@@ -406,8 +406,8 @@
                         var sx = xsize;
                         var sy = ysize;
                         $('#the-photo').css({
-                            width: Math.round(sx * boundx) + 'px',
-                            height: Math.round(sy * boundy) + 'px',
+                            width: "135",
+                            height: "135",
                         });
                     }
                     $('#myModal').modal('show');
