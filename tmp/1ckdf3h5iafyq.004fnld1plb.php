@@ -47,7 +47,7 @@ function check()
       }
       else
       {
-        window.location.href="verifying";
+        window.location.href="jumping";
       }
     },
     error:function(data)

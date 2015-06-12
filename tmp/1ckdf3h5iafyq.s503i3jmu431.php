@@ -55,6 +55,10 @@ function check()
       {
         alert("the accout has not verified");
       } 
+      else if(data=='4')
+      {
+        alert("the password doesn't match the uername!");
+      }
       else
         alert("no account");
     },

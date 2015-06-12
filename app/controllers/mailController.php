@@ -131,8 +131,8 @@ class mailController{
             $this->sendmail($mail,$message,$subject);
         }
     }
-    function verifying($f3)
+    function jumping($f3)
     {
-        echo Template::instance()->render('application/verifying.html');
+        echo Template::instance()->render('application/jumping.html');
     }
 }
