@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>无标题文档</title>
+<title>FootPrint</title>
 <link href="app/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="app/assets/css/login.css" rel="stylesheet" type="text/css">
 
