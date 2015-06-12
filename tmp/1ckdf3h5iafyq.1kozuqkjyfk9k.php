@@ -6,6 +6,7 @@
         <title>FRIEND CIRCLE</title>
         <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="../app/assets/css/circle/circle.css">
+        <link rel="stylesheet" href="../app/assets/css/jquery.Jcrop.css" type="text/css" />
     </head>
     <body>
         <!-- 大图 -->
@@ -48,22 +49,21 @@
         </nav>
         <hr>
         <div class="col-md-12" id="postnews">
-            <form action="savepost" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+         
                 <div class="col-md-6 col-md-offset-3">
-                    <div class="form-group">
-                        <textarea class="form-control" name="content" rows="3" placeholder="What's happening?"></textarea>
-                    </div>
+                    
+                        <textarea class="form-control" id="postcontent" name="content" rows="3" placeholder="What's happening?"></textarea>
+                   
                 </div>
                 <div class="col-md-offset-3 col-md-6">
                     <!-- <label for="file" class="col-sm-2">选择文件</label> -->
-                    <div class="form-group">
-                        <input type="file" name="file">
-                    </div>
+                 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" id="addPhoto">
+      Add Photo && Post
+    </button>
+    
                 </div>
-                <div class="col-sm-offset-5 col-sm-10">
-                    <button type="submit" class="btn btn-default" name="submit" id="postapost">POST</button>
-                </div>
-            </form>
+                
+    
         </div>
         <hr>
         <!-- news -->
@@ -112,8 +112,73 @@
         </div>
     </div>
 </div>
-<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+
+
+<!-- 隐藏框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel">Choose photo</h4>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+                    <div class="row">
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-self" id="add" >THIS IS THE BUTTON</button>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-md-1">
+                            <div id="photo-show"></div>
+                        </div>
+                    </div>              
+             </div>
+          </div>
+          <div class="modal-footer">        
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form action="graphicUpload.html" method="post" onsubmit="return checkCoords();" id="photoform">
+        <input type="hidden" id="x" name="x" />
+        <input type="hidden" id="y" name="y" />
+        <input type="hidden" id="w" name="w" />
+        <input type="hidden" id="h" name="h" />     
+    </form>
+
+    <div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-1">
+                        <img src="" id='modifyPhoto' />
+                    </div>
+                    <div class="col-md-1 col-md-offset-3">
+                        <div id="preview-pane">
+                            <div class="preview-container">
+                                <img src="" id="jcrop-preview" class="jcrop-preview" >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>      
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="modify-submit">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+<script src="../vendor/jquery/jquery.Jcrop.min.js"></script>
+
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript">
@@ -208,5 +273,205 @@
         alert('post successfully!');
     });
 </script>
+
+<!-- 剪辑图片 -->
+  <script type="text/javascript">
+
+            //????
+            $(function(){
+
+                $("#add").bind("drag",function(event){
+                    event.preventDefault(); 
+                });
+
+                $("#add").bind("dragenter",function(event){ 
+                    event.preventDefault();
+                });
+
+                $("#add").bind("dragover",function(event){  
+                    $('#add').css('background-image','url(../app/assets/images/up2.png)');
+                    event.preventDefault();
+                });
+
+                $("#add").bind("dragleave",function(event){ 
+                    $('#add').css('background-image','url(../app/assets/images/up1.png)');
+                    event.preventDefault();
+                });
+                
+
+                var reader = new FileReader();
+                var img;
+                var p;
+                var jcrop_api,
+                    boundx,
+                    boundy,
+                $preview = $('#preview-pane'),
+                $pcnt = $('#preview-pane .preview-container'),
+                $pimg = $('#jcrop-preview'),
+                xsize = $pcnt.width(),
+                ysize = $pcnt.height();
+                var count = 0;
+
+                $("#add").bind("drop",function(event){
+                    event.preventDefault();
+
+                    $('#add').css('background-image','url(../app/assets/images/up1.png)');
+                    
+                    var file = event.originalEvent.dataTransfer.files;
+                    if(file.length==0){
+                        alert("no file");
+                        return false;
+                    }
+
+                    for(var i=0;i<file.length;i++)
+                    { 
+                        if(file[i].type.indexOf('image') === -1){ 
+                            alert("您拖的不是图片！"); 
+                            return false; 
+                        }
+                        //判断图片格式
+                        // if(!(/\.(?:jpg|png|gif)$/.test(file[i])))      //不严谨
+                        // {
+                        //  alert("not jpg");
+                        //  return false;
+                        // }
+
+                        if(count == 1)return false;
+                        reader.readAsDataURL(file[i]);
+                        reader.onloadend = function(readEvent){
+                            p = readEvent.target.result;
+                            img = '<div id="the-photo-container"><img src="'+ p +'" id="the-photo" /></div>';
+                            $('#modifyPhoto').attr("src",p);
+                            $('.jcrop-holder img').attr("src",p);
+                            //修剪预览框
+                            $('#jcrop-preview').attr("src",p);
+
+                            $('#myModal').modal('hide');
+                            $('#photoModal').modal('show');
+                            
+                            
+                            
+                            //裁剪
+                            $('#modifyPhoto').Jcrop({
+                                  bgFade : true,
+                                  bgOpacity : 0.3,
+                                  boxWidth : 300,
+                                  boxHeight : 300,
+                                  aspectRatio : 1,   //按照上传部分设定为固定大小
+                                  onChange: updateCoords,
+                                  onSelect: updateCoords
+                            },function(){
+                                var bounds = this.getBounds();
+                                boundx = bounds[0];
+                                boundy = bounds[1];
+                                jcrop_api = this;
+                                $preview.appendTo(jcrop_api.ui.holder); 
+                            });
+                        }
+                    }   
+                });
+                
+                function updateCoords(c)
+                 {
+                        var rx = xsize/c.w;
+                        var ry = ysize/c.h;
+                        $pimg.css({
+                            width: Math.round(rx * boundx) + 'px',
+                            height: Math.round(ry * boundy) + 'px',
+                            marginLeft: '-' + Math.round(rx * c.x) + 'px',
+                            marginTop: '-' + Math.round(ry * c.y) + 'px',
+                        });
+                        $('#x').val(c.x);
+                        $('#y').val(c.y);
+                        $('#w').val(c.w);
+                        $('#h').val(c.h);
+                 };
+                
+                $('#modify-submit').bind("click",function(){
+                    $("#photo-show").append(img);
+                    $("#photoModal").modal('hide');
+                    jcrop_api.release();
+                    if($('#w').val() != 0 && $('#h').val() != 0)
+                    {
+                        var sx = xsize/$('#w').val();
+                        var sy = ysize/$('#h').val();
+                        $('#the-photo').css({
+                            width: Math.round(sx * boundx) + 'px',
+                            height: Math.round(sy * boundy) + 'px',
+                            marginLeft: '-' + Math.round(sx * $('#x').val()) + 'px',
+                            marginTop: '-' + Math.round(sy * $('#y').val()) + 'px',
+                        });
+                    }
+                    else{
+                        var sx = xsize;
+                        var sy = ysize;
+                        $('#the-photo').css({
+                            width: Math.round(sx * boundx) + 'px',
+                            height: Math.round(sy * boundy) + 'px',
+                        });
+                    }
+                    $('#myModal').modal('show');
+                    count = 1;
+                });
+
+
+                $('#addPhoto').bind("click",function(){
+                    $("#photo-show").empty();
+                    $("#myModal").modal('show');
+                });
+
+                $('#cancel').bind("click",function(){
+                    $("#myModal").modal('hide');
+                    $("#photo-show").empty();
+                    count = 0;
+                    $('#x').val(0);
+                    $('#y').val(0);
+                    $('#w').val(0);
+                    $('#h').val(0);
+                });
+
+
+                
+                $('#submit').bind("click",function(){
+                    $.ajax({
+                        url: 'savepost',
+                        cache: false,
+                        data: {
+                            img:p,
+                             x: $('#x').val(),
+                             y: $('#y').val(),
+                             w: $('#w').val(),
+                             h: $('#h').val(),
+                             content:$('#postcontent').val(),
+                        },
+                        type: 'post',
+                        dataType: 'json',
+                        success: function(data){
+                            $('#myModal').modal('hide');
+                            $('#photo-show').empty();
+                            count = 0;
+                            $('#x').val(0);
+                            $('#y').val(0);
+                            $('#w').val(0);
+                            $('#h').val(0);
+                            location.reload();  
+
+                        },
+                        error: function(data){
+                            alert("post failed");
+                        }
+
+                    });
+                });
+
+            //点击框外隐藏事件处理
+           $('#photoModal').on('hidden.bs.modal',function(){
+                jcrop_api.release();
+                photoModalShow = 0;
+            });
+
+            });
+
+        </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ class CircleController {
             $i = 0;
             foreach ($friends as $obj)
             {
-                $list[ $i ] = $post->find(array('user_id=?', $obj->user_id));
+                $list[ $i ] = $post->find(array('user_id=?', $obj->user_id),array('order'=>"post_id DESC"));
                 foreach ($list[ $i ] as $item)
                 {
                     $isLiked = $like->find(array('post_id=? and user_id=?', $item->post_id, $_SESSION['user_id']));
@@ -50,8 +50,7 @@ class CircleController {
     //发布新动态
     function savepost($f3)
     {
-
-        session_start();
+ session_start();
         $db = $f3->get('DB');
         $post = new \DB\SQL\Mapper($db, 'post');
         $allId = $post->select('post_id', array(), array('order' => 'post_id DESC'));
@@ -74,50 +73,91 @@ class CircleController {
         $nickname = $users[0]['nick_name'];
 
 
-        //文件上传
-        if (isset($_POST['submit']))
-        {
-            $name = $_FILES["file"]["name"];
+//图片上传处理
+        $img = isset($_POST['img'])? $_POST['img'] : '';
+    $x = $_POST['x'];
+    $y = $_POST['y'];
+    $w = $_POST['w'];
+    $h = $_POST['h'];
+  
+    // 获取图片  
+    list($type, $data) = explode(',', $img);  
+    // 判断类型  
+    if(strstr($type,'image/jpeg')!==''){  
+        $ext = '.jpg';  
+    }
+// 生成的文件名  
+    $photo = 'app/uploads/'.$newId.$ext;
+    // 生成文件  
+    file_put_contents($photo, base64_decode($data), true); 
+    if($x != 0 && $y != 0 && $w != 0 && $h != 0)
+    {
+        $image = imagecreatefromjpeg($photo);
+        $to_crop_array = array("x"=>$x,"y"=>$y,"width"=>$w,"height"=>$h);
+        $new_im = imagecrop($image,$to_crop_array);
+        imagejpeg($new_im,$photo);
+    } 
+    
+     //存库
+    $post->post_id = $newId;
+    $post->user_id = $_SESSION['user_id'];
+    $post->content = $_POST['content'];
+    $post->image = $newId;
+    $post->published_at = date("Y-m-d H:i", time());
+    $post->nick_name = $nickname;
+    $post->save();
 
-            //$size = $_FILES['file']['size']
-            //$type = $_FILES['file']['type']
+   
+    //返回  
+    header('content-type:application/json;charset=utf-8');  
+    $ret = array("ok");  
+    echo json_encode($ret);  
+       
 
-            $tmp_name = $_FILES['file']['tmp_name'];
-            $error = $_FILES['file']['error'];
+        // //文件上传
+        // if (isset($_POST['submit']))
+        // {
+        //     $name = $_FILES["file"]["name"];
 
-            if (isset($name))
-            {
-                if (! empty($name))
-                {
+        //     //$size = $_FILES['file']['size']
+        //     //$type = $_FILES['file']['type']
 
-                    $location = 'app/uploads/';
+        //     $tmp_name = $_FILES['file']['tmp_name'];
+        //     $error = $_FILES['file']['error'];
 
-                    if (move_uploaded_file($tmp_name, $location . $newId . '.jpg'))
-                    {
+        //     if (isset($name))
+        //     {
+        //         if (! empty($name))
+        //         {
 
-                        //存库
-                        $post->post_id = $newId;
-                        $post->user_id = $_SESSION['user_id'];
-                        $post->content = $_POST['content'];
-                        $post->image = $newId;
-                        $post->published_at = date("Y-m-d H:i", time());
-                        $post->nick_name = $nickname;
-                        $post->save();
-                        header("Location:home");
-                    }
-                } else
-                {
-                    echo 'please choose a file' . '<br>';
-                    echo "<a href='home'>back</a>";
+        //             $location = 'app/uploads/';
 
-                    // header("Location:home");
+        //             if (move_uploaded_file($tmp_name, $location . $newId . '.jpg'))
+        //             {
 
-                }
-            }
-        } else
-        {
-            echo "sorry, fail to upload, please try later!";
-        }
+        //                 //存库
+        //                 $post->post_id = $newId;
+        //                 $post->user_id = $_SESSION['user_id'];
+        //                 $post->content = $_POST['content'];
+        //                 $post->image = $newId;
+        //                 $post->published_at = date("Y-m-d H:i", time());
+        //                 $post->nick_name = $nickname;
+        //                 $post->save();
+        //                 header("Location:home");
+        //             }
+        //         } else
+        //         {
+        //             echo 'please choose a file' . '<br>';
+        //             echo "<a href='home'>back</a>";
+
+        //             // header("Location:home");
+
+        //         }
+        //     }
+        // } else
+        // {
+        //     echo "sorry, fail to upload, please try later!";
+        // }
     }
 
     //查找好友

@@ -13,7 +13,22 @@
             <h1>Diary</h1>
             <p>Here, we share happiness, share beauty!</p>
         </div>
-       
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse" id="circleNav">
+                    <ul class="nav navbar-nav">
+                        <li class="" id="home">
+                            <a class="js-nav js-tooltip js-dynamic-tooltip" data-placement="bottom" href="../home">
+                            <span class="glyphicon glyphicon-home"></span>
+                            <span class="text">Home</span>
+                            </a>
+                        </li>
+                       
+                    </ul>
+                    
+                </div>
+            </div>
+        </nav>
          <hr>
         <div class="col-md-12" id="postnews">
             <form action="saveDiary" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
