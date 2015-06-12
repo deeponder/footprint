@@ -1,7 +1,7 @@
 <?php
 
 $f3 = require('vendor/fatfree/lib/base.php');
-
+date_default_timezone_set('Asia/Shanghai');
 $f3->config('app/config/config.ini');
 $f3->config('app/config/routes.ini');
 
