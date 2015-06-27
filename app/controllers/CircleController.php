@@ -25,7 +25,7 @@ class CircleController
             // 精华所在！！循环将post内容赋给list，并判断用户是否点过赞
             $i = 0;
             foreach ($friends as $obj) {
-                $list[$i] = $post->find(array('user_id=?', $obj->user_id), array('order' => "post_id DESC"));
+                $list[$i] = $post->find(array('user_id=? OR user_id=?', $obj->user_id,$uid), array('order' => "post_id DESC"));
                 foreach ($list[$i] as $item) {
                     $isLiked = $like->find(array('post_id=? and user_id=?', $item->post_id, $_SESSION['user_id']));
                     $isCollected = $collection->find(array('post_id=? and user_id=?', $item->post_id, $_SESSION['user_id']));
@@ -39,6 +39,7 @@ class CircleController
                 $i++;
             }
             $f3->set('list', $list);
+            $f3->set('uid',$uid);
             echo Template::instance()->render('application/circle/home.html');
         }
     }
@@ -67,7 +68,7 @@ class CircleController
         $nickname = $users[0]['nick_name'];
         
         //图片上传处理
-        $img = isset($_POST['img']) ? $_POST['img'] : '';
+        $img = isset($_POST['img'])?$_POST['img']:' ';
         $x = $_POST['x'];
         $y = $_POST['y'];
         $w = $_POST['w'];
@@ -82,10 +83,11 @@ class CircleController
         }
         
         // 生成的文件名
-        $photo = 'app/uploads/' . $newId . $ext;
+        $photo = 'app/uploads/'.$newId.$ext;
         
         // 生成文件
-        file_put_contents($photo, base64_decode($data), true);
+        file_put_contents($photo, base64_decode($data), true); 
+        // chmod($photo, 777);
         if ($x != 0 && $y != 0 && $w != 0 && $h != 0) {
             $image = imagecreatefromjpeg($photo);
             $to_crop_array = array("x" => $x, "y" => $y, "width" => $w, "height" => $h);
@@ -236,6 +238,7 @@ class CircleController
             $follower[$i] = $user->find(array('user_id=?', $foller[$i]['friend_id']));
         }
         $f3->set('follower', $follower);
+        $f3->set('uid',$uid);
         echo Template::instance()->render('application/circle/follower.html');
     }
     
@@ -381,6 +384,29 @@ class CircleController
         // echo $post_id;
         //        echo "<a href='home'>back</a>";
         
+    }
+
+    //我发表的状态
+    function mypost($f3){
+           $uid = $f3->get('GET.uid');
+            $db = $f3->get('DB');
+            $post = new \DB\SQL\Mapper($db, 'post');
+            $list = $post->find(array('user_id=?', $uid));
+            $f3->set('list', $list);
+        echo Template::instance()->render('application/circle/mypost.html');
+
+    }
+
+    function delPost($f3) {
+        session_start();
+        $post_id = $f3->get('GET.post_id');
+        $db = $f3->get('DB');
+        $post = new \DB\SQL\Mapper($db, 'post');
+        $post->load(array('post_id=?', $post_id));
+        $post->erase();
+        echo "delete post sussessfully!";
+        echo "<br>";
+        echo "<a href='mypost?uid=".$_SESSION['user_id']."'>back</a>";
     }
 }
 ?>

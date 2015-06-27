@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>MY POSTS</title>
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    </head>
+    <body>
+         <repeat group="{{ @list }}" value="{{ @list }}">
+	        <span>{{@list['nick_name']}}</span>&nbsp&nbsp<span><img src="../app/uploads/{{ @list['image'] }}.jpg"
+	        height="50" width="50"></span>&nbsp&nbsp<span>{{ @list['content'] }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp<span>published at:{{@list['published_at']}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a
+	        class="btn btn-default" href="delPost?post_id={{@list['post_id']}}" role="button">Delete</a><br><br>
+        </repeat>
+       
+        <br>
+        <a href="home"><span class="glyphicon glyphicon-menu-left col-md-offset-1"></span>BACK</a>
+    </body>
+</html>

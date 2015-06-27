@@ -1,0 +1,427 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	 <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="vendor/jquery/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="http://api.map.baidu.com/library/CurveLine/1.5/src/CurveLine.min.js"></script>
+	<style type="text/css">
+		body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ORfE5iSS8TcITzAmAPqD0e9z"></script>
+	<title>地图</title>
+	 <style type="text/css"> 
+#head1{
+    background-color:#000000;
+    padding-top:0px;
+    height:50px;
+    height-line:50px;
+    width:100%;
+    filter: alpha(opacity=0); 
+    opacity: 0.8;
+}
+#head2{
+    background-color:;
+    background:url(../app/assets/images/time8.jpg) no-repeat fixed 0px 0px;
+    padding-top:80px;
+    height:250px;
+    width:100%;
+}
+</style>
+</head>
+<body>
+<div id="head1"><img  src="../app/assets/images/title.png" width="100" height="55" style="margin-left:50px"/><a style="margin-right:80px;margin-top:25px;float:right"href="logout"><font color="ffffff">Logout</font></a><a style="margin-right:50px;margin-top:25px;float:right"href="home"><font color="ffffff">Home</font></a></div>
+
+
+
+<div class="panel panel-default">
+<div class="panel-body">
+	<button type="button" id="add" class="btn btn-default"  data-target=".bs-example-modal-sm">AddPicture</button>
+    <button type="button" id="create" class="btn btn-default"  data-target=".bs-example-modal-sm1">CreatTravel</button>
+<form action="search" class="navbar-form navbar-right" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="search" placeholder="type name to follow" name="search">
+                             <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                        </div>
+                    </form>
+</div>
+</div>
+
+
+<!-- 左侧各种输入功能的地方 -->
+<div class="panel panel-default" style="width:28%;float:left;" >
+  <div class="panel-body">
+
+<div class="panel panel-default" style="width:270px;float:left;" >
+  <div class="panel-body">
+    
+
+    <form action="addPhoto" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
+	<div id="addcontent" style="display:block">
+	<div class="input-group">
+  <span class="input-group-addon" id="sizing-addon2">Address:</span>
+  <input type="text" id= "addressfind1" class="form-control" placeholder="location" aria-describedby="sizing-addon2">
+  <input id="alng" name="alng" style="display:none">
+  <input id="alat" name="alat" style="display:none">
+  <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+  </div>
+  <br>
+  <input type="file" name="file">
+  <input id="lng" name="lng" style="display:none">
+   <input id="lat" name="lat" style="display:none">
+  <br>
+  <button type="submit" name="submit" id="confirm" class="btn btn-default"  data-target=".bs-example-modal-sm">Confirm</button>
+  <h4 style="display:none" id = "upAddress">Example heading <span class="label label-default">address</span></h4>
+  </form>
+
+  </div>
+	</div>
+
+	<div id="createTravel" style="display:none">
+	<div class="input-group">
+	<span class="input-group-addon" id="sizing-addon2">Start:</span>
+    <input type="text" id= "startAddress" class="form-control" placeholder="Username" aria-describedby="sizing-addon2">
+    <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+    </div>
+    <br>
+    <button type="button" id="confirm1" class="btn btn-default"  data-target=".bs-example-modal-sm">Confirm</button>
+
+	</div>
+	</div></div>
+
+	<div class="panel panel-default" style="width:270px;float:left;" >
+  <div class="panel-body" id="showContent" >
+  
+  </div></div>
+
+
+   </div></div>
+
+
+	<!-- 存放地图的地方 -->
+<div class="panel panel-default" style="width:70%;float:right">
+  <div class="panel-body">
+	<div id="allmap" ></div>
+	</div></div>
+
+	<!-- 模态框展现 -->
+	<div class="modal fade" id= "myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      ...
+    </div>
+    </div>
+  </div>
+</body>
+</html>
+<script type="text/javascript" >
+
+
+    var lng=0;
+	var lat=0;
+   //按钮的切换功能
+   $('#add').click(function()
+   {
+   	document.getElementById('addcontent').style.display="block";
+   	document.getElementById('createTravel').style.display="none";
+   	document.getElementById('addtotravel').style.display="none";
+   });	
+   $('#create').click(function()
+   {
+    document.getElementById('addcontent').style.display="none";
+   	document.getElementById('createTravel').style.display="block";
+   	document.getElementById('addtotravel').style.display="none"; 
+	
+   });
+
+    
+	var json_code = new Array();
+	var i=0;
+	var picture = new Array();
+	<repeat group = "{{@points}}" value = "{{@point}}">
+	json_code[i++] = new Array();
+	json_code[i-1][0]={{@point['lng']}};
+	json_code[i-1][1]={{@point['lat']}};
+	picture[i-1]={{@point['lng']}}*1000000+{{@point['lat']}}*1000000;
+	</repeat>
+
+
+	var start = new Array();
+	var end = new Array();
+	var i=-1;
+	var pic = new Array();
+	<repeat group = "{{@travels}}" value = "{{@travel}}">
+	i++;
+	start[i] = new Array();
+	end[i] = new Array();
+	start[i][0] = {{@travel['slng']}};
+	start[i][1] = {{@travel['slat']}};
+	end[i][0] = {{@travel['elng']}};
+	end[i][1] = {{@travel['elat']}};
+	pic[i-1]={{@travel['elng']}}*1000000+{{@travel['elat']}}*1000000;
+	</repeat>
+
+
+
+	// 百度地图API功能
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	var map = new BMap.Map("allmap");
+	map.centerAndZoom("西安",12);                   // 初始化地图,设置城市和地图级别。
+	map.enableScrollWheelZoom();
+	
+	
+
+	for(var i=0;i<json_code.length;i++){
+		var point = new BMap.Point(json_code[i][0], json_code[i][1]);
+		var marker = new BMap.Marker(point); // 创建点
+		map.addOverlay(marker);    //增加点
+		marker.addEventListener("click",attribute);
+	}
+	
+
+
+	//获取覆盖物位置
+	
+   
+
+	for(var i =0;i <start.length;i++)
+	{
+		var point1 = new BMap.Point(start[i][0],start[i][1]);
+		var point2 = new BMap.Point(end[i][0],end[i][1]);
+		var points=[point1,point2];
+		//map.centerAndZoom(point2,6);
+		var marker1 = new BMap.Marker(point1);
+		var marker2 = new BMap.Marker(point2);
+		map.addOverlay(marker1);
+		map.addOverlay(marker2);
+		var curve = new BMapLib.CurveLine(points, {strokeColor:"blue", strokeWeight:3, strokeOpacity:0.5});
+		map.addOverlay(curve);
+		marker1.addEventListener("click",attribute);
+		marker2.addEventListener("click",attribute);
+
+	}
+
+	//点击位置相应函数
+	
+
+function attribute(e){
+		var p = e.target;
+		var img = p.getPosition().lng*1000000+p.getPosition().lat*1000000;
+		var content = "<img src='app/uploads/"+img+".jpg' width='260px' ></img>";
+		document.getElementById("showContent").innerHTML=content;
+
+		//处理
+		lng = p.getPosition().lng;
+		lat = p.getPosition().lat;
+		document.getElementById('lng').value=lng;
+		document.getElementById('lat').value=lat;
+		var mygeo=new BMap.Geocoder();
+		mygeo.getLocation(new BMap.Point(lng,lat),function(result)
+		{
+			if(result)
+				document.getElementById('upAddress').innerHTML=result;
+		});
+	}
+
+
+
+
+  	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "addressfind1"
+		,"location" : map
+	});
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue;
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		
+		setPlace();
+	});
+
+     var pp;
+function setPlace(){
+		//map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+		    pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp, 18);
+			//map.addOverlay(new BMap.Marker(pp));    //添加标注
+			document.getElementById('alng').value=pp.lng;
+			document.getElementById("alat").value = pp.lat;
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+
+
+
+    var ac1 = new BMap.Autocomplete(
+        {
+        	"input":"startAddress"
+        	,"location":map
+        });
+	ac1.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue1;
+	ac1.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue1 = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue1;
+		
+		setPlace1();
+	});
+		var pp1;
+	function setPlace1(){
+		//map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun1(){
+		    pp1 = local1.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp1, 18);
+			//map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local1 = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun1
+		});
+		local1.search(myValue1);
+	}
+	
+
+	$('#confirm').click(function()
+	{
+		$('#myModal').modal('show');
+		$.ajax(
+		{
+			type:"GET",
+			url:"addPhoto?lng="+pp.lng+"&lat="+pp.lat,
+			success:function()
+			{
+				var point = new BMap.Point(pp.lng, pp.lat);
+				map.centerAndZoom(point, 15);
+				
+				//var marker = new BMap.Marker(point); // 创建点
+				marker.addEventListener("click",attribute);
+				map.addOverlay(marker);    //增加点
+				
+			},
+			error:function()
+			{
+				alert("nonono");
+			}
+		});
+	});
+	// function attribute()
+	// {
+	// alert("lalala");				
+	// }
+
+	$('#confirm1').click(function()
+	{
+		$.ajax(
+		{
+			type:"GET",
+			url:"createTravel?startlng="+pp1.lng+"&startlat="+pp1.lat,
+			success:function()
+			{
+				//alert("yes");
+				var point = new BMap.Point(pp1.lng,pp1.lat);
+				map.centerAndZoom(point,12);
+				var marker = new BMap.Marker(point);
+				map.addOverlay(marker);
+			},
+			error:function()
+			{
+				alert("no");
+			}
+		});
+	});
+
+
+	//对于搜索框的查询
+	var ac2 = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "search"
+		,"location" : map
+	});
+	ac2.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue2;
+	ac2.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue2 = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue2;
+		
+		setPlace2();
+	});
+
+     var pp2;
+function setPlace2(){
+		//map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun2(){
+		    pp2 = local2.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			map.centerAndZoom(pp2, 18);
+			//map.addOverlay(new BMap.Marker(pp));    //添加标注
+		}
+		var local2 = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun2
+		});
+		local2.search(myValue2);
+	}
+
+</script>

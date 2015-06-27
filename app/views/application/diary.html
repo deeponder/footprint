@@ -6,13 +6,33 @@
         <title>Diary</title>
         <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="../app/assets/css/circle/circle.css">
-    </head>
-    <body>
-        <!-- 大图 -->
-        <div class="jumbotron" id="test2">
-            <h1>Diary</h1>
-            <p>Here, we share happiness, share beauty!</p>
-        </div>
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ORfE5iSS8TcITzAmAPqD0e9z"></script>
+  <style type="text/css"> 
+#head1{
+    background-color:#000000;
+    padding-top:0px;
+    height:50px;
+    height-line:50px;
+    width:100%;
+    filter: alpha(opacity=0); 
+    opacity: 0.8;
+}
+#head2{
+    background-color:;
+    background:url(../app/assets/images/time8.jpg) no-repeat fixed 0px 0px;
+    padding-top:80px;
+    height:250px;
+    width:100%;
+}
+</style>
+</head>
+
+<body>
+<div id="head1"><img  src="../app/assets/images/title.png" width="100" height="55" style="margin-left:50px"/><a style="margin-right:50px;margin-top:25px;float:right"href="logout"><font color="ffffff">logout</font></a></div>
+<div id="head2" align="center" >
+<img src="../app/assets/images/home.png" width="750" height="150" />
+
+</div> 
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="collapse navbar-collapse" id="circleNav">
@@ -34,8 +54,18 @@
             <form action="saveDiary" method="POST" role="form" class="form-horizontal" enctype="multipart/form-data">
                 <div class="col-md-6 col-md-offset-3">
                     <div class="form-group">
+                        <input class="form-control" type="text" name="title" placeholder="please input the title">
+                    </div>
+                    <div class="form-group">
                         <textarea class="form-control" name="content" rows="3" placeholder="Write something"></textarea>
                     </div>
+                    <div class="form-group">
+                      <input type="file" name="file">
+                    </div>
+                    <div id="r-result">请输入:<input type="text" id="suggestId" size="20" name="location" style="width:150px;" /></div>
+                    <input type="text" id="lng" name="lng"size="20"  style="width:150px;display:none" />
+                    <input type="text" id="lat" name="lat"size="20" style="width:150px;display:none" />
+					<div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
                 </div>
                 
                 <div class="col-sm-offset-5 col-sm-10">
@@ -47,8 +77,11 @@
         <!-- news -->
         <div class="col-sm-offset-1" id="postcontent">
             <repeat group="{{ @list }}" value="{{ @list }}">
-                <span>{{@list['content']}}</span><span class="col-sm-offset-10"><a href="rmDiary?id={{@list['id']}}"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></a></span><br>
+                <span>{{@list['title']}}</span>&nbsp&nbsp&nbsp&nbsp&nbsp<span>{{@list['content']}}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span> <img
+                src="../app/uploads/{{ @list['image'] }}.jpg"  height="50" width="50"> </span><span class="col-md-offset-8"><a href="rmDiary?id={{@list['id']}}"><button class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button></a></span><br><br>
             </repeat>
+        </div>
+        <div id="l-map" style="display:none">
         </div>
 
 <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
@@ -58,3 +91,59 @@
 
 </body>
 </html>
+<script type="text/javascript">
+	// 百度地图API功能
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	var map = new BMap.Map("l-map");
+	map.centerAndZoom("北京",12);                   // 初始化地图,设置城市和地图级别。
+
+	var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+		{"input" : "suggestId"
+		,"location" : map
+	});
+
+	ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+	var str = "";
+		var _value = e.fromitem.value;
+		var value = "";
+		if (e.fromitem.index > -1) {
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+		
+		value = "";
+		if (e.toitem.index > -1) {
+			_value = e.toitem.value;
+			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		}    
+		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+		G("searchResultPanel").innerHTML = str;
+	});
+
+	var myValue;
+	ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+	var _value = e.item.value;
+		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+		
+		setPlace();
+	});
+
+	function setPlace(){
+		//map.clearOverlays();    //清除地图上所有覆盖物
+		function myFun(){
+			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+			//map.centerAndZoom(pp, 18);
+			//map.addOverlay(new BMap.Marker(pp));    //添加标注
+			document.getElementById("lng").value=pp.lng;
+			document.getElementById("lat").value=pp.lat;
+		}
+		var local = new BMap.LocalSearch(map, { //智能搜索
+		  onSearchComplete: myFun
+		});
+		local.search(myValue);
+	}
+</script>

@@ -7,13 +7,38 @@
         <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="../app/assets/css/circle/circle.css">
         <link rel="stylesheet" href="../app/assets/css/jquery.Jcrop.css" type="text/css" />
-    </head>
-    <body>
+    
+  <style type="text/css"> 
+#head1{
+    background-color:#000000;
+    padding-top:0px;
+    height:50px;
+    height-line:50px;
+    width:100%;
+    filter: alpha(opacity=0); 
+    opacity: 0.8;
+}
+#head2{
+    background-color:;
+    background:url(../app/assets/images/time8.jpg) no-repeat fixed 0px 0px;
+    padding-top:80px;
+    height:250px;
+    width:100%;
+}
+</style>
+</head>
+
+<body>
+<div id="head1"><img  src="../app/assets/images/title.png" width="100" height="55" style="margin-left:50px"/><a style="margin-right:50px;margin-top:25px;float:right"href="../logout"><font color="ffffff">logout</font></a></div>
+<div id="head2" align="center" >
+<img src="../app/assets/images/home.png" width="750" height="150" />
+
+</div> 
         <!-- 大图 -->
-        <div class="jumbotron" id="test2">
+<!--         <div class="jumbotron" id="test2">
             <h1>Friend Circle</h1>
             <p>Here, we share happiness, share beauty!</p>
-        </div>
+        </div> -->
         <!-- 导航栏 -->
         <nav class="navbar navbar-default">
             <div class="container-fluid">
@@ -31,6 +56,7 @@
                             <span class="text"> MyCircle </span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
+                              <li><a href="mypost?uid={{@uid}}">My POST</a></li>
                                 <li><a href="following">FOLLOWING</a></li>
                                 <li><a href="follower">FOLLOWERS</a></li>
                                 <li class="divider"></li>
@@ -98,6 +124,8 @@
     </repeat>
     </repeat>
 </div>
+
+
 <!-- Creates the bootstrap modal where the image will appear -->
 <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -126,6 +154,7 @@
                     <div class="row">
                         <div class="col-md-1">
                             <button type="button" class="btn btn-self" id="add" >THIS IS THE BUTTON</button>
+                            <input type="file" id="clickadd" style="visibility:hidden">
                         </div>
                     </div>
                     <div class="row" style="padding-top:10px">
@@ -272,6 +301,7 @@
     $('#postapost').click(function () {
         alert('post successfully!');
     });
+
 </script>
 
 <!-- 剪辑图片 -->
@@ -312,12 +342,8 @@
                 ysize = $pcnt.height();
                 var count = 0;
 
-                $("#add").bind("drop",function(event){
-                    event.preventDefault();
-
-                    $('#add').css('background-image','url(../app/assets/images/up1.png)');
-                    
-                    var file = event.originalEvent.dataTransfer.files;
+                function dealFile(file)
+                {
                     if(file.length==0){
                         alert("no file");
                         return false;
@@ -369,7 +395,33 @@
                             });
                         }
                     }   
+                }
+
+                function dealPhoto(event)
+                {
+                    event.preventDefault();
+
+                    $('#add').css('background-image','url(../app/assets/images/up1.png)');
+                    
+                    var file = event.originalEvent.dataTransfer.files;
+                    dealFile(file);
+                }
+
+                function dealPhotoByClick()
+                {
+                    var file = event.target.files;
+                    dealFile(file);
+                }
+
+                $("#add").bind("drop",function(event){
+                    $.dealPhoto(event);     
                 });
+
+                $("#add").click(function(){
+                    $("#clickadd").click();
+                });
+
+                $("#clickadd").bind("change",event,dealPhotoByClick);
                 
                 function updateCoords(c)
                  {
@@ -455,6 +507,8 @@
                             $('#w').val(0);
                             $('#h').val(0);
                             location.reload();  
+                            // console.log(data);
+                            // alert(data);
 
                         },
                         error: function(data){
